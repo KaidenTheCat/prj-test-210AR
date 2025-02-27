@@ -45,13 +45,39 @@ func main() {
 			sortAndSave(users)
 		case "2":
 			users = getUsers()
-			for _, u := range users {
-				fmt.Printf(
-					"Id: %v, Name: %s, Time: %v\n",
-					u.Id, u.Name, u.TimeSpent,
-				)
+			if len(users) == 0 {
+				terCl()
+				fmt.Println("Рейтинг порожній")
+			} else {
+				terCl()
+				for _, u := range users {
+					fmt.Printf(
+						"Id: %v, Name: %s, Time: %v\n",
+						u.Id, u.Name, u.TimeSpent,
+					)
+				}
 			}
 		case "3":
+			terCl()
+			fmt.Println("Ви впевнені?")
+			fmt.Println("1. Так\n2. Ні")
+		label:
+			for {
+				confirm := ""
+				fmt.Scan(&confirm)
+
+				switch confirm {
+				case "1":
+					terCl()
+					os.Truncate("users.json", 0)
+					fmt.Println("Рейтинг очищено")
+					break label
+				case "2":
+					break label
+				default:
+				}
+			}
+		case "4":
 			return
 		default:
 		}
@@ -62,7 +88,8 @@ func main() {
 func menu() {
 	fmt.Println("1. Грати")
 	fmt.Println("2. Рейтинг")
-	fmt.Println("3. Вийти")
+	fmt.Println("3. Очистити рейтинг")
+	fmt.Println("4. Вийти")
 }
 
 func play() domain.User {
@@ -70,30 +97,110 @@ func play() domain.User {
 	myPoints := 0
 
 	for myPoints < totalPoints {
-		x, y := rand.Intn(2), rand.Intn(2)
-		fmt.Printf("\n%v + %v = ", x, y)
+		example := rand.Intn(5) + 1
+		switch example {
+		case 1:
+			x, y := rand.Intn(9), rand.Intn(9)
+			fmt.Printf("\n%v + %v = ", x, y)
 
-		ans := ""
-		fmt.Scan(&ans)
+			ans := ""
+			fmt.Scan(&ans)
 
-		ansInt, err := strconv.Atoi(ans)
+			ansInt, err := strconv.Atoi(ans)
 
-		if err != nil {
-			fmt.Println("Невдале знаяення, давай по новой")
-		} else {
-			if ansInt == x+y {
-				myPoints += pointsPerQuestion
-				fmt.Printf("Правильно! У вас %v очок!", myPoints)
+			if err != nil {
+				fmt.Println("Невдале значення, давай по новой")
 			} else {
-				fmt.Println("Не праивльно!")
+				if ansInt == x+y {
+					myPoints += pointsPerQuestion
+					fmt.Printf("Правильно! У вас %v очок!", myPoints)
+				} else {
+					fmt.Println("Не праивльно!")
+				}
+			}
+		case 2:
+			x, y := rand.Intn(9), rand.Intn(9)
+			fmt.Printf("\n%v - %v = ", x, y)
+
+			ans := ""
+			fmt.Scan(&ans)
+
+			ansInt, err := strconv.Atoi(ans)
+
+			if err != nil {
+				fmt.Println("Невдале значення, давай по новой")
+			} else {
+				if ansInt == x-y {
+					myPoints += pointsPerQuestion
+					fmt.Printf("Правильно! У вас %v очок!", myPoints)
+				} else {
+					fmt.Println("Не праивльно!")
+				}
+			}
+		case 3:
+			x, y := rand.Intn(9), rand.Intn(9)
+			fmt.Printf("\n%v * %v = ", x, y)
+
+			ans := ""
+			fmt.Scan(&ans)
+
+			ansInt, err := strconv.Atoi(ans)
+
+			if err != nil {
+				fmt.Println("Невдале значення, давай по новой")
+			} else {
+				if ansInt == x*y {
+					myPoints += pointsPerQuestion
+					fmt.Printf("Правильно! У вас %v очок!", myPoints)
+				} else {
+					fmt.Println("Не праивльно!")
+				}
+			}
+		case 4:
+			x, y := rand.Intn(9), rand.Intn(9)
+			fmt.Printf("\n%v / %v = ", x, y)
+
+			ans := ""
+			fmt.Scan(&ans)
+
+			ansInt, err := strconv.Atoi(ans)
+
+			if err != nil {
+				fmt.Println("Невдале значення, давай по новой")
+			} else {
+				if ansInt == x/y {
+					myPoints += pointsPerQuestion
+					fmt.Printf("Правильно! У вас %v очок!", myPoints)
+				} else {
+					fmt.Println("Не праивльно!")
+				}
+			}
+		case 5:
+			x, y, z := rand.Intn(9), rand.Intn(9), rand.Intn(6)
+			fmt.Printf("\n(%v + %v) * %v = ", x, y, z)
+
+			ans := ""
+			fmt.Scan(&ans)
+
+			ansInt, err := strconv.Atoi(ans)
+
+			if err != nil {
+				fmt.Println("Невдале значення, давай по новой")
+			} else {
+				if ansInt == (x+y)*z {
+					myPoints += pointsPerQuestion
+					fmt.Printf("Правильно! У вас %v очок!", myPoints)
+				} else {
+					fmt.Println("Не праивльно!")
+				}
 			}
 		}
-
 	}
 
 	TimeFinish := time.Now()
 	timeSpent := TimeFinish.Sub(TimeStart)
 
+	terCl()
 	fmt.Printf("Ваш час: %v", timeSpent)
 	fmt.Print("Введіть ваше ім'я: ")
 
@@ -142,7 +249,7 @@ func getUsers() []domain.User {
 
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			_, err = os.Create("users.jsom")
+			_, err = os.Create("users.json")
 			if err != nil {
 				log.Printf("getUsers(os.Create): %s", err)
 			}
@@ -159,4 +266,8 @@ func getUsers() []domain.User {
 	}
 
 	return users
+}
+
+func terCl() {
+	fmt.Print("\033[H\033[2J")
 }
